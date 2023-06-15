@@ -20,6 +20,7 @@ router.post(
     }
     let body = req.body;
     sendMail(body);
+    res.json({ success: true });
   }
 );
 router.post(
@@ -37,6 +38,7 @@ router.post(
     }
     let body = req.body;
     sendMail2(body);
+    res.json({ success: true });
   }
 );
 async function sendMail(data) {
@@ -70,39 +72,40 @@ async function sendMail(data) {
             
             `, // html body
     });
-  
-    async function sendMail2(data) {
-      // Generate test SMTP service account from ethereal.email
-      // Only needed if you don't have a real mail account for testing
-      let testAccount = await nodemailer.createTestAccount();
-    
-      // create reusable transporter object using the default SMTP transport
-      let transporter = nodemailer.createTransport({
-          host: "smtp-mail.outlook.com", // hostname
-          secureConnection: false, // use SSL
-          port: 587, // port for secure SMTP
-          auth: {
-              user: "al289539@edu.uaa.mx",
-              pass: "Pakwar10!"
-          }
-      });
-    
-      // send mail with defined transport object
-      let info = await transporter.sendMail({
-        from: '"AirBnV" <al289539@edu.uaa.mx>', // sender address
-        to: data.usr.email, // list of receivers
-        subject: "Gracias por ponerse en contacto con nosotros", // Subject line
-        text: "Gracias por su preferencia", // plain text body
-        html: `
-              <h2>Se recibió su mensaje, en la brevedad nos pondremos en contacto con usted</h2>
-              <br>
-              <b>${data.desarrollo}</span></b>
-              <br>
-              
-              `, // html body
-      });
-    
-  }
+
+}
+
+async function sendMail2(data) {
+  // Generate test SMTP service account from ethereal.email
+  // Only needed if you don't have a real mail account for testing
+  let testAccount = await nodemailer.createTestAccount();
+
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+      host: "smtp-mail.outlook.com", // hostname
+      secureConnection: false, // use SSL
+      port: 587, // port for secure SMTP
+      auth: {
+          user: "al289539@edu.uaa.mx",
+          pass: "Pakwar10!"
+      }
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"AirBnV" <al289539@edu.uaa.mx>', // sender address
+    to: data.usr.email, // list of receivers
+    subject: "Gracias por ponerse en contacto con nosotros", // Subject line
+    text: "Gracias por su preferencia", // plain text body
+    html: `
+          <h2>Se recibió su mensaje, en la brevedad nos pondremos en contacto con usted</h2>
+          <br>
+          <b>${data.desarrollo}</span></b>
+          <br>
+          
+          `, // html body
+  });
+
 }
 
 router.get("/inversiones", (req, res) => {
