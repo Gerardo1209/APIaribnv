@@ -4,18 +4,9 @@ const nodemailer = require("nodemailer");
 const { body, param, validationResult } = require("express-validator");
 const initializeApp = require('firebase/app');
 const firebaseElements = require('firebase/firestore/lite');
+const configuracion = require('./configuracion');
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAE7513sROASRMElGrHOXCsR47_1fQ430s",
-  authDomain: "vegetta777-e8cdf.firebaseapp.com",
-  projectId: "vegetta777-e8cdf",
-  storageBucket: "vegetta777-e8cdf.appspot.com",
-  messagingSenderId: "340005087501",
-  appId: "1:340005087501:web:70653dba56f36609aa6844",
-  measurementId: "G-KL2WN3TSR2"
-}
-
-const firebaseApp = initializeApp.initializeApp(firebaseConfig);
+const firebaseApp = initializeApp.initializeApp(configuracion);
 const db = firebaseElements.getFirestore(firebaseApp);
 
 router.get("/miembros",
@@ -23,6 +14,7 @@ router.get("/miembros",
     const usuariosRef = firebaseElements.collection(db, 'usuarios');
     const usuariosSnapshot = await firebaseElements.getDocs(usuariosRef);
     res.status = 200;
+
     res.send(usuariosSnapshot.docs.map((doc) => doc.data()));
   }
 );
