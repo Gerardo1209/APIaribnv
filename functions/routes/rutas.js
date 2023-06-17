@@ -23,7 +23,6 @@ router.get("/miembros",
 
 router.get("/apartados",
   async (req,res) => {
-    
     const refCasas = firebaseElements.collectionGroup(db,'apartado');
     var datas = [];
     await firebaseElements.getDocs(refCasas).then(async (elements) => {
@@ -92,6 +91,37 @@ router.get("/generos",
       }
     });
     res.send(datas);
+  }
+);
+
+router.post("/getApartado",
+  [
+    body("docRef").not().isEmpty(),
+    body("casaId").not().isEmpty(),
+    body("nombreCasa").not().isEmpty()
+  ],
+  async (req,res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      res.json({success:false, err: JSON.stringify(errors)});
+      return;
+    }
+    let body = req.body;
+    
+    let idCasa = Number.parseInt(body.casaId).toString();
+    firebaseElements.doc
+    const refApartado = firebaseElements.doc(db,'casas',idCasa,'apartado',body.docRef);
+    var data = {};
+    await firebaseElements.getDoc(refApartado).then((element) => {
+      var info = element.data();
+      let date1 = new Date(info.fechaInicio);
+      data["fechaInicio"] = date1;
+      let date2 = new Date(info.fechaFinal)
+      data["fechaFinal"] = date2;
+      data["resumen"] = body.nombreCasa;
+      data["descripcion"] = "Reservación AirbnV";
+    });
+    res.send(data);
   }
 );
 
