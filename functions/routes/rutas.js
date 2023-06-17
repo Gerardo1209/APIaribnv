@@ -5,6 +5,8 @@ const { body, param, validationResult } = require("express-validator");
 const initializeApp = require('firebase/app');
 const firebaseElements = require('firebase/firestore/lite');
 const configuracion = require('./configuracion');
+const { firestore } = require("firebase-admin");
+const numeral = require('numeral')
 
 const firebaseApp = initializeApp.initializeApp(configuracion);
 const db = firebaseElements.getFirestore(firebaseApp);
@@ -19,6 +21,80 @@ router.get("/miembros",
   }
 );
 
+router.get("/apartados",
+  async (req,res) => {
+    
+    const refCasas = firebaseElements.collectionGroup(db,'apartado');
+    var datas = [];
+    await firebaseElements.getDocs(refCasas).then(async (elements) => {
+      
+      for (let i = 0; i < elements.docs.length; i++) {
+        const element = elements.docs[i];
+        var data = element.data();
+        let usuario = firebaseElements.doc(db, 'usuarios', data["uid"]);
+        let infoUsuario = await firebaseElements.getDoc(usuario);
+        data["infoUsuario"] = infoUsuario.data();
+        data["fechaInicioFormato"] = new Date(data['fechaInicio']).toLocaleDateString();
+        data["fechaFinalFormato"] = new Date(data['fechaFinal']).toLocaleDateString();
+        data["precioFormato"] = numeral(data['precio']).format('0,0.00');
+        data["idDocumento"] = element.id;
+        datas.push(data);
+      }
+    });
+    res.send(datas);
+  }
+);
+
+router.get("/masApartados",
+  async (req, res) => {
+    var datas = [];
+    const refApartados = firebaseElements.collectionGroup(db, 'apartado');
+    await firebaseElements.getDocs(refApartados).then((elements) => {
+      for (let i = 0; i < elements.docs.length; i++) {
+        const element = elements.docs[i];
+        var data = element.data();
+        var result = datas.findIndex(obj => {
+          return obj.idCasa === data["idCasa"];
+        });
+        if(result!=-1){
+          datas[result].cant += 1;
+        }else{
+          datas.push({
+            idCasa: data["idCasa"],
+            cant: 1
+          });
+        }
+      }
+    });
+    res.send(datas);
+  }
+);
+
+router.get("/generos",
+  async (req, res) => {
+    var datas = [];
+    const refUsuarios = firebaseElements.collectionGroup(db, 'usuarios');
+    await firebaseElements.getDocs(refUsuarios).then((elements) => {
+      for (let i = 0; i < elements.docs.length; i++) {
+        const element = elements.docs[i];
+        var data = element.data();
+        var result = datas.findIndex(obj => {
+          return obj.genero === data["gender"];
+        });
+        if(result!=-1){
+          datas[result].cant += 1;
+        }else{
+          datas.push({
+            genero: data["gender"],
+            cant: 1
+          });
+        }
+      }
+    });
+    res.send(datas);
+  }
+);
+
 router.post(
   "/reserva",
   [
@@ -28,7 +104,6 @@ router.post(
     body("fechaFinal").not().isEmpty()
   ],
   (req, res) => {
-    console.log("estoy en el API post")
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.json({ success: false, err: JSON.stringify(errors) });
@@ -39,6 +114,8 @@ router.post(
     res.json({ success: true });
   }
 );
+
+
 router.post(
   "/contacto",
   [
@@ -46,7 +123,6 @@ router.post(
     body("usr").not().isEmpty()
   ],
   (req, res) => {
-    console.log("estoy en el API post")
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.json({ success: false, err: JSON.stringify(errors) });
@@ -74,7 +150,7 @@ async function sendMail(data) {
     });
   
     // send mail with defined transport object
-    let info = await transporter.sendMail({
+    /*let info = await transporter.sendMail({
       from: '"AirBnV" <al289539@edu.uaa.mx>', // sender address
       to: data.usr.email, // list of receivers
       subject: "Reserve de casa en AirBnV", // Subject line
@@ -87,7 +163,7 @@ async function sendMail(data) {
             <b><span>entre los días ${data.fechaInicio  } y ${data.fechaFinal} </b>
             
             `, // html body
-    });
+    });*/
 
 }
 
@@ -108,7 +184,7 @@ async function sendMail2(data) {
   });
 
   // send mail with defined transport object
-  let info = await transporter.sendMail({
+  /*let info = await transporter.sendMail({
     from: '"AirBnV" <al289539@edu.uaa.mx>', // sender address
     to: data.usr.email, // list of receivers
     subject: "Gracias por ponerse en contacto con nosotros", // Subject line
@@ -120,7 +196,7 @@ async function sendMail2(data) {
           <br>
           
           `, // html body
-  });
+  });*/
 
 }
 
