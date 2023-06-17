@@ -15,7 +15,7 @@ const bodyParser = require("body-parser");
 const misRutas = require("./routes/rutas");
 const app = express(); //crear al servidor
 const cors = require("cors");
-const port = 3000;
+const port = 3001;
 
 app.use(cors());
 
