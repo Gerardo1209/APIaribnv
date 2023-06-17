@@ -180,7 +180,7 @@ async function sendMail(data) {
     });
   
     // send mail with defined transport object
-    /*let info = await transporter.sendMail({
+    let info = await transporter.sendMail({
       from: '"AirBnV" <al289539@edu.uaa.mx>', // sender address
       to: data.usr.email, // list of receivers
       subject: "Reserve de casa en AirBnV", // Subject line
@@ -193,7 +193,7 @@ async function sendMail(data) {
             <b><span>entre los días ${data.fechaInicio  } y ${data.fechaFinal} </b>
             
             `, // html body
-    });*/
+    });
 
 }
 
@@ -214,7 +214,7 @@ async function sendMail2(data) {
   });
 
   // send mail with defined transport object
-  /*let info = await transporter.sendMail({
+  let info = await transporter.sendMail({
     from: '"AirBnV" <al289539@edu.uaa.mx>', // sender address
     to: data.usr.email, // list of receivers
     subject: "Gracias por ponerse en contacto con nosotros", // Subject line
@@ -226,7 +226,7 @@ async function sendMail2(data) {
           <br>
           
           `, // html body
-  });*/
+  });
 
 }
 
